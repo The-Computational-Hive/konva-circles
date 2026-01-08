@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Stage, Layer, Circle } from "react-konva";
+import { Stage, Layer, Circle, Text } from "react-konva";
 
 const CANVAS_W = 900;
 const CANVAS_H = 600;
@@ -35,26 +35,41 @@ export default function App() {
         <Stage width={CANVAS_W} height={CANVAS_H}>
           <Layer>
             {points.map((p) => (
-              <Circle
-                key={p.id}
-                x={p.x}
-                y={p.y}
-                radius={p.r}
-                draggable
-                // Keep it easy to see which one is selected:
-                fill='#a90909'              // ✅ makes every circle visible
-                stroke={p.id === selectedId ? "black" : undefined}
-                strokeWidth={p.id === selectedId ? 2 : 0}
-                // Click selects
-                onMouseDown={() => setSelectedId(p.id)}
-                onTouchStart={() => setSelectedId(p.id)}
-                // Drag updates position
-                onDragMove={(e) => {
-                  const x = clamp(e.target.x(), p.r, CANVAS_W - p.r);
-                  const y = clamp(e.target.y(), p.r, CANVAS_H - p.r);
-                  updatePoint(p.id, { x, y });
-                }}
-              />
+              <React.Fragment key={p.id}>
+                <Circle
+                  key={p.id}
+                  x={p.x}
+                  y={p.y}
+                  radius={p.r}
+                  draggable
+                  // Keep it easy to see which one is selected:
+                  fill='#a90909'              // ✅ makes every circle visible
+                  stroke={p.id === selectedId ? "white" : "maroon"}
+                  strokeWidth={p.id === selectedId ? 3 : 1}
+                  // Click selects
+                  onMouseDown={() => setSelectedId(p.id)}
+                  onTouchStart={() => setSelectedId(p.id)}
+                  // Drag updates position
+                  onDragMove={(e) => {
+                    const x = clamp(e.target.x(), p.r, CANVAS_W - p.r);
+                    const y = clamp(e.target.y(), p.r, CANVAS_H - p.r);
+                    updatePoint(p.id, { x, y });
+                  }}
+                />
+                <Text
+                  text={p.id}          // ← label (use p.name later if you want)
+                  x={p.x}
+                  y={p.y}
+                  fontSize={14}
+                  fontStyle="bold"
+                  fill={p.id === selectedId ? "white" : "maroon"}
+                  align="center"
+                  verticalAlign="middle"
+                  offsetX={p.id.length * 3.5} // rough centering
+                  offsetY={7}
+                  listening={false}    // ← IMPORTANT
+                />
+              </React.Fragment>
             ))}
           </Layer>
         </Stage>
