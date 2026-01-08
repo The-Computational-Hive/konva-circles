@@ -29,6 +29,25 @@ export default function App() {
     );
   }
 
+  function deleteSelected() {
+    if (!selectedId) return;
+
+    setPoints((prev) => {
+      const idx = prev.findIndex((p) => p.id === selectedId);
+      if (idx === -1) return prev;
+
+      const next = prev.filter((p) => p.id !== selectedId);
+
+      // choose a new selection:
+      const newSelected =
+        next[idx] ?? next[idx - 1] ?? null;
+
+      setSelectedId(newSelected ? newSelected.id : null);
+
+      return next;
+    });
+  }
+
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16, padding: 16 }}>
       <div style={{ border: "1px solid #ddd", borderRadius: 12, overflow: "hidden" }}>
@@ -93,6 +112,21 @@ export default function App() {
           </select>
         </label>
 
+        <button
+          style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #ccc" }}
+          onClick={() => {
+            // quick add another circle
+            const id = String.fromCharCode(97 + points.length);
+            setPoints((prev) => [
+              ...prev,
+              { id, x: Math.random() * CANVAS_W, y: Math.random() * CANVAS_H, r: 25 },
+            ]);
+            setSelectedId(id);
+          }}
+        >
+          + Add circle
+        </button>
+
         {selected ? (
           <>
             <div style={{ fontSize: 13, opacity: 0.8, marginBottom: 12 }}>
@@ -119,18 +153,17 @@ export default function App() {
             </label>
 
             <button
-              style={{ width: "100%", padding: 10, borderRadius: 10, border: "1px solid #ccc" }}
-              onClick={() => {
-                // quick add another circle
-                const id = String.fromCharCode(97 + points.length);
-                setPoints((prev) => [
-                  ...prev,
-                  { id, x: 100 + prev.length * 50, y: 100 + prev.length * 30, r: 25 },
-                ]);
-                setSelectedId(id);
+              style={{
+                width: "100%",
+                marginTop: 8,
+                padding: 10,
+                borderRadius: 10,
+                border: "1px solid #ccc",
               }}
+              onClick={deleteSelected}
+              disabled={!selectedId}
             >
-              + Add circle
+              Delete circle
             </button>
 
             <hr style={{ margin: "14px 0" }} />
